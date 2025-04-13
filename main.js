@@ -5,9 +5,6 @@ const setupDatabase = require("./config/dbsetup");
 
 const app = express();
 
-// Set the port to the one provided by the environment (Clever Cloud sets it) or fallback to 5000
-const PORT = process.env.PORT || 5000;
-
 // Set up CORS to allow your GoDaddy frontend domain
 app.use(cors({
   origin: "http://y5p.e9b.mytemp.website", // Replace with your GoDaddy domain
@@ -29,11 +26,10 @@ app.use("/", userTrackingRoute);
 
 // Set up database and start the server
 setupDatabase().then(() => {
-  // Listen on the appropriate port and ensure it binds to 0.0.0.0 for external access
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+  // Listen without specifying a port (platform decides the port for you)
+  app.listen(() => {
+    console.log("Server is running (platform assigns the port automatically)");
   });
 }).catch((err) => {
-  // If the database setup fails, log the error
   console.error("Failed to start server:", err.message);
 });

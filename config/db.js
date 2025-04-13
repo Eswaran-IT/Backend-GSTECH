@@ -1,7 +1,6 @@
 // config/db.js
 const mysql = require("mysql2/promise");
-require("dotenv").config();a
-
+require("dotenv").config();
 let connection;
 
 async function connectDB() {

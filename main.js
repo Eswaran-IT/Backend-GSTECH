@@ -1,12 +1,12 @@
-require("dotenv").config();
+require("dotenv").config(); // Load environment variables from the .env file
 const express = require("express");
 const cors = require("cors");
 const setupDatabase = require("./config/dbsetup");
 
 const app = express();
 
-// Set the port to the one provided by the environment (Clever Cloud sets it) or fallback to 8080
-const PORT = process.env.PORT || 8080;
+// Set the port to the one provided by the environment (Clever Cloud sets it) or fallback to 5000
+const PORT = process.env.PORT || 5000;
 
 // Set up CORS to allow your GoDaddy frontend domain
 app.use(cors({

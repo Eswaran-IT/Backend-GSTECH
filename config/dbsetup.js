@@ -1,6 +1,6 @@
 // config/dbsetup.js
 require("dotenv").config();
-const { connectDB, getPool } = require("./db");
+const { connectDB, getConnection } = require("./db");
 
 const { DB_NAME } = process.env;
 const CONTACT_TABLE = "contacts";
@@ -8,21 +8,18 @@ const USER_TRACK_TABLE = "user_tracking";
 
 async function setupDatabase() {
   try {
-    // 1. Create pool
-    connectDB();
-    const pool = getPool();
+    // 1. Connect to MySQL server
+    await connectDB();
+    const connection = getConnection(); // Get the connection
 
-    // 2. Get a connection from pool
-    const connection = await pool.getConnection();
-
-    // 3. Create database if not exists
+    // 2. Create database if not exists
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
     console.log(`Database '${DB_NAME}' ensured`);
 
-    // 4. Switch to that database
+    // 3. Switch to the correct database
     await connection.changeUser({ database: DB_NAME });
 
-    // 5. Create contact table if not exists
+    // 4. Create the contacts table if it doesn't exist
     const contactTableQuery = `
       CREATE TABLE IF NOT EXISTS ${CONTACT_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -35,7 +32,7 @@ async function setupDatabase() {
     await connection.query(contactTableQuery);
     console.log("Contacts table ready");
 
-    // 6. Create user tracking table if not exists
+    // 5. Create user tracking table if it doesn't exist
     const userTrackQuery = `
       CREATE TABLE IF NOT EXISTS ${USER_TRACK_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,9 +45,9 @@ async function setupDatabase() {
         referrer TEXT,
         is_new_user BOOLEAN,
         entry_date DATE,
-        entry_time TIME,
+        entry_time TIME,   
         exit_date DATE,
-        exit_time TIME,
+        exit_time TIME,    
         time_spent INT,
         section_viewed JSON,
         interactions JSON
@@ -58,8 +55,6 @@ async function setupDatabase() {
     await connection.query(userTrackQuery);
     console.log("User tracking table ready");
 
-    // 7. Release the connection back to pool
-    connection.release();
   } catch (err) {
     console.error("Error in DB setup:", err.message);
     process.exit(1);

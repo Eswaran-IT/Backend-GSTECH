@@ -6,27 +6,27 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.DB_NAME,  // The database name from .env file
-  waitForConnections: true,       // Wait for available connection
-  connectionLimit: 10,            // Max 10 connections at a time
-  queueLimit: 0                   // Unlimited query queue
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// Function to check and keep MySQL connection alive
-async function pingDatabase() {
+// Simple heartbeat query to keep the connection alive
+async function keepConnectionAlive() {
   try {
-    // Directly use pool.query() to ping the database
-    await pool.query("SELECT 1");
-    console.log("MySQL connection is active.");
+    // Perform a dummy query (heartbeat) every minute
+    const [rows] = await pool.query("SELECT 1");
+    console.log("Database connection is alive.");
   } catch (err) {
-    console.error("Error pinging MySQL:", err.message);
+    console.error("Error keeping DB connection alive:", err.message);
   }
 }
 
-// Optionally ping MySQL every 5 minutes to keep it awake
-setInterval(pingDatabase, 300000); // Ping every 5 minutes
+// Keep pinging every 5 minutes to ensure the database connection remains active
+setInterval(keepConnectionAlive, 300000); // Ping every 5 minutes
 
-// Get connection pool
+// For external usage, to execute database queries
 function getPool() {
   return pool;
 }

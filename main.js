@@ -27,7 +27,7 @@ app.use("/", userTrackingRoute);
 
 // Set up database and start the server
 setupDatabase().then(() => {
-  const PORT = process.env.PORT || 8080; // You can adjust the port here
+  const PORT = process.env.PORT || 3000; // You can adjust the port here
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });

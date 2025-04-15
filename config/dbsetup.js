@@ -10,17 +10,14 @@ async function setupDatabase() {
   const pool = getPool(); // Get the connection pool
 
   try {
-    // 1. Get a connection from the pool
-    const connection = await pool.getConnection();
-
-    // 2. Create the database if not exists
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
+    // 1. Create the database if not exists
+    await pool.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
     console.log(`Database '${DB_NAME}' ensured`);
 
-    // 3. Switch to the correct database
-    await connection.changeUser({ database: DB_NAME });
+    // 2. Switch to the correct database
+    await pool.query(`USE \`${DB_NAME}\``);
 
-    // 4. Create the contacts table if it doesn't exist
+    // 3. Create the contacts table if it doesn't exist
     const contactTableQuery = `
       CREATE TABLE IF NOT EXISTS ${CONTACT_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -30,10 +27,10 @@ async function setupDatabase() {
         message TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )`;
-    await connection.query(contactTableQuery);
+    await pool.query(contactTableQuery);
     console.log("Contacts table ready");
 
-    // 5. Create user tracking table if it doesn't exist
+    // 4. Create user tracking table if it doesn't exist
     const userTrackQuery = `
       CREATE TABLE IF NOT EXISTS ${USER_TRACK_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,11 +50,9 @@ async function setupDatabase() {
         section_viewed JSON,
         interactions JSON
       )`;
-    await connection.query(userTrackQuery);
+    await pool.query(userTrackQuery);
     console.log("User tracking table ready");
 
-    // Release the connection after setup
-    connection.release();
   } catch (err) {
     console.error("Error in DB setup:", err.message);
     process.exit(1);

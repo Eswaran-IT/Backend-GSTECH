@@ -14,10 +14,8 @@ const pool = mysql.createPool({
 
 async function pingDatabase() {
   try {
-    const connection = await pool.getConnection();
-    await connection.ping();  // This will keep the connection alive
+    const [rows] = await pool.query('SELECT 1');  // Query to keep the connection alive
     console.log("MySQL connection is active.");
-    connection.release();
   } catch (err) {
     console.error("Error pinging MySQL:", err.message);
   }

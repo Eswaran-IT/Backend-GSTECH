@@ -2,25 +2,32 @@
 const mysql = require("mysql2/promise");
 require("dotenv").config();
 
-let connection;
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,  // We will set the DB name here
+  waitForConnections: true,       // Wait for available connection
+  connectionLimit: 10,            // Max 10 connections at a time
+  queueLimit: 0                   // Unlimited query queue
+});
 
-async function connectDB() {
+async function pingDatabase() {
   try {
-    // Establish connection to the MySQL server (without specifying DB name)
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-    });
-    console.log("MySQL Database Connected");
+    const connection = await pool.getConnection();
+    await connection.ping();  // This will keep the connection alive
+    console.log("MySQL connection is active.");
+    connection.release();
   } catch (err) {
-    console.error("MySQL connection failed:", err.message);
-    process.exit(1);
+    console.error("Error pinging MySQL:", err.message);
   }
 }
 
-function getConnection() {
-  return connection;
+// Optionally ping MySQL every 5 minutes to keep it awake
+setInterval(pingDatabase, 300000); // Ping every 5 minutes
+
+function getPool() {
+  return pool;
 }
 
-module.exports = { connectDB, getConnection };
+module.exports = { getPool };

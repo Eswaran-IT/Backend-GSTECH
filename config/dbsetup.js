@@ -10,15 +10,17 @@ async function setupDatabase() {
   const pool = getPool(); // Get the connection pool
 
   try {
-    // 1. Create database if not exists
+    // 1. Get a connection from the pool
     const connection = await pool.getConnection();
+
+    // 2. Create the database if not exists
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
     console.log(`Database '${DB_NAME}' ensured`);
 
-    // 2. Switch to the correct database
+    // 3. Switch to the correct database
     await connection.changeUser({ database: DB_NAME });
 
-    // 3. Create the contacts table if it doesn't exist
+    // 4. Create the contacts table if it doesn't exist
     const contactTableQuery = `
       CREATE TABLE IF NOT EXISTS ${CONTACT_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,7 +33,7 @@ async function setupDatabase() {
     await connection.query(contactTableQuery);
     console.log("Contacts table ready");
 
-    // 4. Create user tracking table if it doesn't exist
+    // 5. Create user tracking table if it doesn't exist
     const userTrackQuery = `
       CREATE TABLE IF NOT EXISTS ${USER_TRACK_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +56,8 @@ async function setupDatabase() {
     await connection.query(userTrackQuery);
     console.log("User tracking table ready");
 
-    connection.release(); // Release connection after setup is done
+    // Release the connection after setup
+    connection.release();
   } catch (err) {
     console.error("Error in DB setup:", err.message);
     process.exit(1);

@@ -2,25 +2,28 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const sendMail = async ({ name, email, phone, message }) => {
+  // Create a transporter using GoDaddy's SMTP settings
   const transporter = nodemailer.createTransport({
-    service: "gmail",  // Keep Gmail service or switch it to GoDaddy (if necessary)
+    host: "smtpout.secureserver.net",  // GoDaddy's SMTP server
+    port: 465,  // SSL Port (use 587 for TLS)
+    secure: true,  // true for SSL, false for TLS
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER,  // Your GoDaddy email address
+      pass: process.env.EMAIL_PASS,  // Your GoDaddy email password (or app password if using 2FA)
     },
   });
 
   const mailOptions = {
-    from: `"GS Tech Groups" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER,
-    subject: "New Contact Form Submission",
+    from: `"GS Tech Groups" <${process.env.EMAIL_USER}>`,  // Sender's email
+    to: process.env.EMAIL_USER,  // Send to your own GoDaddy email
+    subject: "New Contact Form Submission",  // Email subject
     html: `
       <h2>Contact Message</h2>
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email}</p>
       <p><strong>Phone:</strong> ${phone}</p>
       <p><strong>Message:</strong><br/>${message}</p>
-    `,
+    `,  // HTML content of the email
   };
 
   try {

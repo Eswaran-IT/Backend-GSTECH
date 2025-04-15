@@ -27,10 +27,11 @@ app.use("/", userTrackingRoute);
 
 // Set up database and start the server
 setupDatabase().then(() => {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 8080; // Use 8080 as default if PORT is not provided
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 }).catch((err) => {
   console.error("Failed to start server:", err.message);
+  process.exit(1); // Exit process if DB setup fails
 });

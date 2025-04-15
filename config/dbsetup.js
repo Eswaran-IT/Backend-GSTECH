@@ -7,17 +7,16 @@ const CONTACT_TABLE = "contacts";
 const USER_TRACK_TABLE = "user_tracking";
 
 async function setupDatabase() {
-  const pool = getPool(); // Get the connection pool
-
+  const pool = getPool();
   try {
-    // 1. Create the database if not exists
+    // Create the database if it doesn't exist
     await pool.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
     console.log(`Database '${DB_NAME}' ensured`);
 
-    // 2. Switch to the correct database
+    // Switch to the correct database
     await pool.query(`USE \`${DB_NAME}\``);
 
-    // 3. Create the contacts table if it doesn't exist
+    // Create the contacts table if it doesn't exist
     const contactTableQuery = `
       CREATE TABLE IF NOT EXISTS ${CONTACT_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -30,7 +29,7 @@ async function setupDatabase() {
     await pool.query(contactTableQuery);
     console.log("Contacts table ready");
 
-    // 4. Create user tracking table if it doesn't exist
+    // Create user tracking table if it doesn't exist
     const userTrackQuery = `
       CREATE TABLE IF NOT EXISTS ${USER_TRACK_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,
